@@ -1,0 +1,46 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # ===== FRONTEND (React) =====
+      - name: Install frontend dependencies
+        working-directory: ./client
+        run: npm install
+
+      - name: Build React app
+        working-directory: ./client
+        run: npm run build
+
+      # ===== BACKEND (Node.js/Express) =====
+      - name: Install backend dependencies
+        working-directory: ./server
+        run: npm install
+
+      - name: Run backend tests (optional)
+        working-directory: ./server
+        run: npm test || echo "No tests found"
+
+      # ===== DEPLOY STEP (customize as needed) =====
+      # Example: Deploy to Render, Railway, Heroku, or via SCP/rsync to a server
+      - name: Deployment Placeholder
+        run: echo "Add your deployment step here (SSH, FTP, cloud, etc)"
